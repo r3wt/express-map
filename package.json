@@ -1,0 +1,30 @@
+{
+  "name": "express-map",
+  "version": "1.0.0",
+  "description": "adds a convenient route mapping function to define a group of routes with prefix and assign/autoload middleware and controllers.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/r3wt/express-map.git"
+  },
+  "keywords": [
+    "expressjs",
+    "express",
+    "express",
+    "plugin",
+    "express",
+    "routing"
+  ],
+  "author": "Garrett Morris <stuckinabox@live.com> (https://github.com/r3wt)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/r3wt/express-map/issues"
+  },
+  "homepage": "https://github.com/r3wt/express-map#readme",
+  "dependencies": {
+    "express": "^4.14.0"
+  }
+}
