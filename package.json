@@ -1,5 +1,5 @@
 {
-  "name": "express-map",
+  "name": "express-map2",
   "version": "1.0.0",
   "description": "adds a convenient route mapping function to define a group of routes with prefix and assign/autoload middleware and controllers.",
   "main": "index.js",
