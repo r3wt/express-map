@@ -1,6 +1,10 @@
-# express-map
+# express-map2 ( not to be confused with Yahoo's `express-map` package which does a totally different thing )
 
-adds map() function to express.
+adds map() function to express. 
+
+# install
+
+` npm install --save express-map2 `
 
 # usage
 
@@ -20,7 +24,7 @@ require('express-map')(app); // 3. patch map into express
 app.map({
 	'GET /':'test',
 	'GET /foo':'middleware.foo,test',
-	'GET /bar':'middleware.bar,test'
+	'GET /bar':'middleware.bar,test'// seperate your handlers with a comma. 
 });
 
 
