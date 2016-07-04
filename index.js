@@ -9,23 +9,31 @@ var Map = function Map(){
 	
 	var path = this.get('controllers'),
 		prefix, 
-		object;
+		routes;
 		
 	switch(true){
 		case (arguments.length == 2):
 			prefix = arguments[0];
-			object = arguments[1];
+			routes = arguments[1];
 		break;
 		case (arguments.length == 1):
 			prefix = '';
-			object = arguments[0];
+			routes = arguments[0];
 		break;
 		default:
-			throw new Error('`express-map` encountered invalid argument exception. The function signature accepts either `prefix,object` or `object`')
+			throw new Error('`express-map` invalid argument exception. The function signature accepts either `prefix,routes` or `routes`')
 		break;
 	}
+	
+	if(typeof prefix !== 'string'){
+		throw new Error('`express-map` invalid argument exception. option `prefix` must be a string.');
+	}
+	
+	if(typeof routes !== 'object' || routes instanceof Array){
+		throw new Error('`express-map` invalid argument exception option `routes` must be an object.')
+	}
 
-	for(var prop in object){
+	for(var prop in routes){
 		
 		var resource = prop.replace(/\s+/g,' ').replace(/^\s+|\s+$/,'');
 		
@@ -33,9 +41,12 @@ var Map = function Map(){
 			
 			resource = resource.split(' ');
 			
-		}else if(prefix.length > 0){
-			//handle special case when user wants to get root of prefix.
-			resource = [resource[0],''];
+			resource = resource.map(function(v){ return v.trim(); });
+			
+		}else{
+			
+			// throw error since we can't parse it.
+			throw new Error('`express-map` unable to parse option `routes` at line `"'+prop+'":"'+routes[prop]+'",`');
 		}
 		
 		var verb = resource[0].toLowerCase();
@@ -56,7 +67,7 @@ var Map = function Map(){
 			throw new Error('`express-map` encountered an invalid http verb `'+verb.toUpperCase()+'`.');
 		}
 		
-		var handlers = object[prop];
+		var handlers = routes[prop];
 		
 		if(typeof handlers != 'string'){
 			var msg = '`express-map` encountered an invalid handler format `'+handlers+'`.\n'+
@@ -108,7 +119,6 @@ var Map = function Map(){
 			this[verb].apply(this,handlers);//call the associated express method with args
 			
 		}
-		
 	}	
 };
 
