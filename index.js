@@ -129,8 +129,7 @@ module.exports = function(app){
 	
 	//cleanup controllers once the app starts.
 	app.listen = function(){
-		controllers = null;
-		delete global.controllers;
+		controllers = null; // ? 
 		app.listen = oldListener;
 		app.listen.apply(app,arguments);
 	};
