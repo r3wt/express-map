@@ -4,21 +4,21 @@ var cPath = false;//cache controller path
 
 var Map = function Map(){
     
-	var path = cPath || this.get('controllers'),//if cPath = false, retrieve controllers from app, only once.
-	prefix,
-	routes;
-	
-	// if path === undefined, then controllers hasn't been set on app instance.
+    var path = cPath || this.get('controllers'),//if cPath = false, retrieve controllers from app, only once.
+    prefix,
+    routes;
+    
+    // if path === undefined, then controllers hasn't been set on app instance.
     if(path === undefined){
         throw new Error("You must use app.set('controllers','/path/to/controllers') to set the controller path before using `express-map2`");
     }
-	
-	// if cPath hasn't been set, set it. 
-	if(!cPath){
-		cPath = path;
-	}
-	
-	// with or without prefix.
+    
+    // if cPath hasn't been set, set it. 
+    if(!cPath){
+        cPath = path;
+    }
+    
+    // with or without prefix.
     switch(true){
         case (arguments.length == 2):
             prefix = arguments[0];
@@ -86,7 +86,7 @@ var Map = function Map(){
             
             if(handlers.indexOf(',') >=0){
                 handlers = handlers.split(',');
-				handlers = handlers.map(function(v){ return v.trim().trimLeft(); });
+                handlers = handlers.map(function(v){ return v.trim().trimLeft(); });
             }else{
                 handlers = [handlers];
             }
