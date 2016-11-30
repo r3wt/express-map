@@ -3,6 +3,7 @@
 adds map() function to express. 
 
 # install
+---
 
 ` npm install --save express-map2 `
 
@@ -42,10 +43,12 @@ app.listen(3000);
 ```
 
 # testing
+---
 
 > testing is done with mocha. to run tests:
-	1. clone the repo `git clone https://github.com/r3wt/express-map.git`
-	2. change into project directory install dependencies `npm install`
-	3. make sure to have mocha installed globally `npm install --global mocha`.
-	4. run tests with `npm test`
+
+1. clone the repo `git clone https://github.com/r3wt/express-map.git`
+2. change into project directory install dependencies `npm install`
+3. make sure to have mocha installed globally `npm install --global mocha`.
+4. run tests with `npm test`
 
