@@ -4,7 +4,7 @@
   "description": "adds a convenient route mapping function to define a group of routes with prefix and assign/autoload middleware and controllers.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -26,5 +26,9 @@
   "homepage": "https://github.com/r3wt/express-map#readme",
   "dependencies": {
     "express": "^4.14.0"
+  },
+  "devDependencies": {
+    "express": "^4.14.0",
+    "mocha": "^3.2.0"
   }
 }
