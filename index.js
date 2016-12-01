@@ -90,7 +90,6 @@ var Map = function Map(){
             }else{
                 handlers = [handlers];
             }
-            var _self = this;
             
             var strHandlers = [];//for the logger output
             
@@ -126,9 +125,9 @@ var Map = function Map(){
                 
             });
             
-            handlers.unshift(routePath);//add the routePath. wanted to do it with spread operator but guess that isn't supported yet. bummer
+            handlers.unshift(routePath);//add the routePath as first element in array
             
-            this[verb].apply(this,handlers);//call the associated express method with args
+            this[verb].apply(this,handlers);//call the associated express method with handlers as arguments
             
         }
     }   
