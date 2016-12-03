@@ -16,7 +16,7 @@ var app = require('express'); // 1. include express
 
 app.set('controllers',__dirname+'/controllers/');// 2. set path to your controllers.
 
-require('express-map')(app); // 3. patch map into express
+require('express-map2')(app); // 3. patch map into express
 
 
 // 4. go to town!
