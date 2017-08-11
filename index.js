@@ -6,7 +6,8 @@ const verbs = [
 ]; 
 //the http methods supported by express + all for all.
 
-const controllers = {};//cache controllers.
+//use var so it can be cleaned up when the app starts.
+var controllers = {};//cache controllers.
 
 let cPath = false;//cache controller path
 
@@ -178,7 +179,7 @@ module.exports = (app) => {
     
     //cleanup controllers once the app starts.
     app.listen = (...args)=>{
-        controllers = null; // ? 
+        controllers = null;
         app.listen = oldListener;
         app.listen.apply(app,args);
     };
