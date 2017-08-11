@@ -1,10 +1,18 @@
-var controllers = {};//cache controllers.
+const verbs = [
+    'all','get','post','put','head','delete','options','trace',
+    'copy','lock','mkcol','move','purge','propfind','proppatch',
+    'unlock','report','mkactivity','checkout','merge','m-search',
+    'notify','subscribe','unsubscribe','patch','search','connect'
+]; 
+//the http methods supported by express + all for all.
 
-var cPath = false;//cache controller path
+const controllers = {};//cache controllers.
 
-var Map = function Map(){
+let cPath = false;//cache controller path
+
+const Map = (...args)=>{
     
-    var path = cPath || this.get('controllers'),//if cPath = false, retrieve controllers from app, only once.
+    let path = cPath || this.get('controllers'),//if cPath = false, retrieve controllers from app, only once.
     prefix,
     routes;
     
@@ -20,13 +28,13 @@ var Map = function Map(){
     
     // with or without prefix.
     switch(true){
-        case (arguments.length == 2):
-            prefix = arguments[0];
-            routes = arguments[1];
+        case (args.length == 2):
+            prefix = args[0];
+            routes = args[1];
         break;
-        case (arguments.length == 1):
+        case (args.length == 1):
             prefix = '';
-            routes = arguments[0];
+            routes = args[0];
         break;
         default:
             throw new Error('`express-map` invalid argument exception. The function signature accepts either `prefix,routes` or `routes`')
@@ -41,15 +49,15 @@ var Map = function Map(){
         throw new Error('`express-map` invalid argument exception option `routes` must be an object.')
     }
 
-    for(var prop in routes){
+    for(let prop in routes){
         
-        var resource = prop.replace(/\s+/g,' ').replace(/^\s+|\s+$/,'');
+        let resource = prop.replace(/\s+/g,' ').replace(/^\s+|\s+$/,'');
         
         if(resource.indexOf(' ') != -1 ){
             
             resource = resource.split(' ');
             
-            resource = resource.map(function(v){ return v.trim().trimLeft(); });
+            resource = resource.map((v)=>{ return v.trim().trimLeft(); });
             
         }else{
             
@@ -57,28 +65,23 @@ var Map = function Map(){
             throw new Error('`express-map` unable to parse option `routes` at line `"'+prop+'":"'+routes[prop]+'",`');
         }
         
-        var verb = resource[0].toLowerCase();
+        let verb = resource[0].toLowerCase();
         
         //create routePath from prefix and actual path. replace duplicate slashes
-        var routePath = (prefix + resource[1].trim()).replace(/\/+/g, '/');
+        let routePath = (prefix + resource[1].trim()).replace(/\/+/g, '/');
         
         if(routePath != '/'){
             routePath = routePath.replace(/\/+$/, '');//only trim trailing slash if not `/`
-        }   
-        
-        var verbs = ['all','get','post','put','head','delete','options',
-        'trace','copy','lock','mkcol','move','purge','propfind','proppatch',
-        'unlock','report','mkactivity','checkout','merge','m-search',
-        'notify','subscribe','unsubscribe','patch','search','connect'];
+        }
         
         if(verbs.indexOf(verb) == -1){
             throw new Error('`express-map` encountered an invalid http verb `'+verb.toUpperCase()+'`.');
         }
         
-        var handlers = routes[prop];
+        let handlers = routes[prop];
         
         if(typeof handlers != 'string'){
-            var msg = '`express-map` encountered an invalid handler format `'+handlers+'`.\n'+
+            let msg = '`express-map` encountered an invalid handler format `'+handlers+'`.\n'+
             'please define your controllers in the form of <module>.<function> or just <module> if module is a function, and seperate them by a comma';
             
             throw new Error(msg);
@@ -86,14 +89,14 @@ var Map = function Map(){
             
             if(handlers.indexOf(',') >=0){
                 handlers = handlers.split(',');
-                handlers = handlers.map(function(v){ return v.trim().trimLeft(); });
+                handlers = handlers.map((v) => { return v.trim().trimLeft() });
             }else{
                 handlers = [handlers];
             }
             
             var strHandlers = [];//for the logger output
             
-            handlers = handlers.map(function(v){
+            handlers = handlers.map((v)=>{
 
                 if(v.indexOf('.') > 0){
                     v = v.split('.');   
@@ -107,7 +110,7 @@ var Map = function Map(){
                 
                 //technically we could use `eval('h = '+strH+';');` but that seems like a dirtier way to handle both concerns.
                 h = controllers;
-                var strH = '';
+                let strH = '';
                 
                 for(var i=0;i<v.length;i++){
                     h = h[v[i]]; //recursively point to the subsequent child until we reach the function.
@@ -133,16 +136,16 @@ var Map = function Map(){
     }   
 };
 
-module.exports = function(app){
+module.exports = (app) => {
     
     app.map = Map.bind(app);//bind express app as `this` context.
     var oldListener = app.listen;
     
     //cleanup controllers once the app starts.
-    app.listen = function(){
+    app.listen = (...args)=>{
         controllers = null; // ? 
         app.listen = oldListener;
-        app.listen.apply(app,arguments);
+        app.listen.apply(app,args);
     };
     
 };
