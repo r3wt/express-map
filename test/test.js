@@ -1,6 +1,5 @@
 var assert = require('assert');
 
-
 var app = require('express')();
 
 app.set('controllers',__dirname +'/controllers/');
@@ -11,7 +10,7 @@ describe('express-map2',function(){
 	
 	describe('#map()',function(){
 		
-		it('should return undefined when used correctly WITHOUT route prefix.', function() {
+		it('should return undefined when called with routes.', function() {
 			
 			var test1Result = app.map({
 				'GET /':'test',
@@ -20,7 +19,7 @@ describe('express-map2',function(){
 			assert.equal(void 0,test1Result);
 		});
 		
-		it('should return undefined when used correctly WITH middleware.', function() {
+		it('should return undefined when called with route-level middleware.', function() {
 			
 			var test1Result = app.map({
 				'GET /foo':'middleware.foo,test',
@@ -30,7 +29,7 @@ describe('express-map2',function(){
 			assert.equal(void 0,test1Result);
 		});
 		
-		it('should return undefined when used correctly WITH route prefix.', function() {
+		it('should return undefined when called WITH route prefix.', function() {
 			
 			var test2Result = app.map('/books',{
 				'GET /': 'books.list',
@@ -42,8 +41,38 @@ describe('express-map2',function(){
 
 			assert.equal(void 0,test2Result);
 		});
+
+		it('should return undefined called with prefix, middleware, and routes.', function() {
+			
+			var middleware = function middleware(req,res,next){next()};
+
+			var test13Result = app.map('/books',middleware,{
+				'GET /books-2': 'books.list',
+				'GET /books-2/:id': 'books.loadOne',
+				'DELETE /books-2/:id': 'books.delete',
+				'PUT /books-2/:id': 'books.update',
+				'POST /books-2': 'books.create'
+			});
+
+			assert.equal(void 0,test13Result);
+		});
+
+		it('should return undefined when called with middleware and routes', function() {
+			
+			var middleware = function middleware(req,res,next){next()};
+
+			var test14Result = app.map(middleware,{
+				'GET /books-3': 'books.list',
+				'GET /books-3/:id': 'books.loadOne',
+				'DELETE /books-3/:id': 'books.delete',
+				'PUT /books-3/:id': 'books.update',
+				'POST /books-3': 'books.create'
+			});
+
+			assert.equal(void 0,test14Result);
+		});
 		
-		it('should throw an exception when called without arguments.',function() {
+		it('should throw $e when called without arguments.',function() {
 			
 			
 			try{
@@ -56,7 +85,7 @@ describe('express-map2',function(){
 			
 		});
 		
-		it('should throw an exception when prefix is not a string.',function(){
+		it('should throw $e when prefix is not a string.',function(){
 			
 			try{
 				app.map({ route: '/books-new' },{
@@ -75,7 +104,7 @@ describe('express-map2',function(){
 			
 		});
 		
-		it('should throw an exception when routes is not an object.',function(){
+		it('should throw $e when routes is not an object.',function(){
 			
 			try{
 				app.map('/books-new2',function(){});
@@ -87,7 +116,7 @@ describe('express-map2',function(){
 			
 		});
 		
-		it('should throw an exception when unable to parse routes.',function(){
+		it('should throw $e when unable to parse routes.',function(){
 			
 			try{
 				app.map('/books-new3',{
@@ -101,7 +130,7 @@ describe('express-map2',function(){
 			
 		});
 		
-		it('should throw an exception when encountering invalid verb/route pair.',function(){
+		it('should throw $e when encountering invalid verb/route pair.',function(){
 			
 			try{
 				app.map('/books-new4',{
@@ -115,7 +144,7 @@ describe('express-map2',function(){
 			
 		});
 		
-		it('should throw an exception when invalid http verb is given.',function(){
+		it('should throw $e when invalid http verb is given.',function(){
 			
 			try{
 				app.map('/books-new5',{
@@ -129,7 +158,7 @@ describe('express-map2',function(){
 			
 		});
 		
-		it('should throw an exception when handler(s) is not a string.',function(){
+		it('should throw $e when handler(s) is not a string.',function(){
 			
 			try{
 				app.map('/books-new6',{
@@ -143,7 +172,7 @@ describe('express-map2',function(){
 			
 		});
 		
-		it('should throw an exception when controller doesnt exist.',function(){
+		it('should throw $e when controller doesnt exist.',function(){
 			
 			try{
 				app.map('/books-new7',{
@@ -157,7 +186,7 @@ describe('express-map2',function(){
 			
 		});
 		
-		it('should throw an exception when handler is not a function.',function(){
+		it('should throw $e when handler is not a function.',function(){
 			
 			try{
 				app.map('/bad-controller',{
@@ -170,7 +199,6 @@ describe('express-map2',function(){
 			}
 			
 		});
-		
+
 	});
-	
 });

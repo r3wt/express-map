@@ -9,6 +9,7 @@ adds map() function to express.
 
 # usage
 
+**setup**
 ```js
 
 var app = require('express'); // 1. include express
@@ -17,11 +18,12 @@ var app = require('express'); // 1. include express
 app.set('controllers',__dirname+'/controllers/');// 2. set path to your controllers.
 
 require('express-map2')(app); // 3. patch map into express
+```
 
+**types of usage supported**
+```js
 
-// 4. go to town!
-
-// no prefix. 
+// without prefix
 app.map({
 	'GET /':'test',
 	'GET /foo':'middleware.foo,test',
@@ -31,6 +33,22 @@ app.map({
 
 // with prefix
 app.map('/api/v1/books',{
+    'GET /': 'books.list',
+    'GET /:id': 'books.loadOne',
+    'DELETE /:id': 'books.delete',
+    'PUT /:id': 'books.update',
+    'POST /': 'books.create'
+});
+
+//with single middleware passed
+const AuthenticateUser2 = function(req,res,next){}
+app.map(AuthenticateUser2,{
+    'GET /': 'User.dashboard',
+    'GET /sessions-list':'User.sessions'
+});
+
+//without prefix and with middleware
+app.map('/api/v1/books',AuthenticateUser,{
     'GET /': 'books.list',
     'GET /:id': 'books.loadOne',
     'DELETE /:id': 'books.delete',

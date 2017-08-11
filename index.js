@@ -10,12 +10,14 @@ const controllers = {};//cache controllers.
 
 let cPath = false;//cache controller path
 
-const Map = (...args)=>{
-    
-    let path = cPath || this.get('controllers'),//if cPath = false, retrieve controllers from app, only once.
-    prefix,
-    routes;
-    
+const InvalidArgumentException = (...args) => { throw new Error(args) };
+
+const Map = function Map(...args){
+
+    //first assure our controller path has been set
+
+    let path = cPath || this.get('controllers');//if cPath = false, retrieve controllers from app, only once.
+
     // if path === undefined, then controllers hasn't been set on app instance.
     if(path === undefined){
         throw new Error("You must use app.set('controllers','/path/to/controllers') to set the controller path before using `express-map2`");
@@ -26,28 +28,54 @@ const Map = (...args)=>{
         cPath = path;
     }
     
-    // with or without prefix.
-    switch(true){
-        case (args.length == 2):
-            prefix = args[0];
-            routes = args[1];
-        break;
-        case (args.length == 1):
-            prefix = '';
-            routes = args[0];
-        break;
-        default:
-            throw new Error('`express-map` invalid argument exception. The function signature accepts either `prefix,routes` or `routes`')
-        break;
+    //next parse our arguments
+    if(args.length >= 3){
+        var prefix = args.shift();
+        var routes = args.pop();
+        var middleware = args;
     }
-    
+    else if(args.length == 2){
+        var routes = args[1];
+        if(args[0] instanceof Array){
+            var middleware = args[0];
+            var prefix = '';
+        }
+        else if(typeof args[0] === 'function'){
+            var middleware = [args[0]];
+            var prefix = '';
+        }
+        else if(typeof args[0] === 'string'){
+            // @ todo - detect and handle string middleware. else assume its a prefix.
+            var middleware = [];
+            var prefix = args[0];
+        }
+        else{
+            InvalidArgumentException(args);
+        }
+    }else{
+        var prefix = '';
+        var middleware = [];
+        var routes = args[0];
+    }
+
+    // console.log(prefix);
+    // console.log(middleware);
+    // console.log(routes);
+
     if(typeof prefix !== 'string'){
         throw new Error('`express-map` invalid argument exception. option `prefix` must be a string.');
+    }
+
+    if(!(middleware instanceof Array)){
+        throw new Error('`express-map` invalid argument exception. option `middleware` must be a function or array of functions');
     }
     
     if(typeof routes !== 'object' || routes instanceof Array){
         throw new Error('`express-map` invalid argument exception option `routes` must be an object.')
     }
+    
+    
+    //now process it
 
     for(let prop in routes){
         
@@ -95,9 +123,18 @@ const Map = (...args)=>{
             }
             
             var strHandlers = [];//for the logger output
-            
+            if(middleware.length){
+                handlers.splice(1,0,...middleware);//insert the middleware into the list of handlers.
+            }
             handlers = handlers.map((v)=>{
 
+                //handle case when a handler is already a function,
+                //such as when passed global middleware
+                if(typeof v == 'function'){
+                    strHandlers.push(v.name||'[function]');
+                    return v;
+                }
+                
                 if(v.indexOf('.') > 0){
                     v = v.split('.');   
                 }else{
@@ -112,7 +149,7 @@ const Map = (...args)=>{
                 h = controllers;
                 let strH = '';
                 
-                for(var i=0;i<v.length;i++){
+                for(let i=0;i<v.length;i++){
                     h = h[v[i]]; //recursively point to the subsequent child until we reach the function.
                     
                     if(i>0) strH += '.';
@@ -128,9 +165,7 @@ const Map = (...args)=>{
                 
             });
             
-            handlers.unshift(routePath);//add the routePath as first element in array
-            
-            this[verb].apply(this,handlers);//call the associated express method with handlers as arguments
+            this[verb](routePath,...handlers);//call the associated express method with handlers as arguments
             
         }
     }   
