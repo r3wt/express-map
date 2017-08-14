@@ -9,7 +9,7 @@ const verbs = [
 //use var so it can be cleaned up when the app starts.
 var controllers = {};//cache controllers.
 
-let cPath = false;//cache controller path
+var cPath = false;//cache controller path
 
 const InvalidArgumentException = (...args) => { throw new Error(args) };
 
@@ -59,10 +59,6 @@ const Map = function Map(...args){
         var routes = args[0];
     }
 
-    // console.log(prefix);
-    // console.log(middleware);
-    // console.log(routes);
-
     if(typeof prefix !== 'string'){
         throw new Error('`express-map` invalid argument exception. option `prefix` must be a string.');
     }
@@ -80,13 +76,12 @@ const Map = function Map(...args){
 
     for(let prop in routes){
         
+        //normalize spaces in resource
         let resource = prop.replace(/\s+/g,' ').replace(/^\s+|\s+$/,'');
         
         if(resource.indexOf(' ') != -1 ){
             
-            resource = resource.split(' ');
-            
-            resource = resource.map((v)=>{ return v.trim().trimLeft(); });
+            resource = resource.split(' ').map((v)=>{ return v.trim().trimLeft(); });
             
         }else{
             
