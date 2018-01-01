@@ -57,7 +57,7 @@ describe('express-map2',function(){
 			assert.equal(void 0,test13Result);
 		});
 
-		it('should return undefined when called with middleware and routes', function() {
+		it('should return undefined when called with function middleware and routes.', function() {
 			
 			var middleware = function middleware(req,res,next){next()};
 
@@ -70,6 +70,41 @@ describe('express-map2',function(){
 			});
 
 			assert.equal(void 0,test14Result);
+		});
+        
+        //string global middleware support
+        it('should return undefined when called with string middleware and routes.', function() {
+			
+			var test15Result = app.map('middleware.foo',{
+				'GET /foo':'test',
+				'GET /bar':'test'
+			});
+
+			assert.equal(void 0,test15Result);
+		});
+        
+        //string global middleware support
+        it('should return undefined when called with prefix, string middleware, and routes.', function() {
+			
+			var test16Result = app.map('/some-cool-prefix','middleware.foo',{
+				'GET /foo':'test',
+				'GET /bar':'test'
+			});
+
+			assert.equal(void 0,test16Result);
+		});
+        
+        //array of functions and string global middleware support
+        it('should return undefined when called with prefix, and mixed array of function/string middlewares, and routes.', function() {
+			
+            var middleware = function middleware(req,res,next){next()};
+            
+			var test17Result = app.map('/some-cool-prefix',['middleware.foo',middleware],{
+				'GET /foo':'test',
+				'GET /bar':'test'
+			});
+
+			assert.equal(void 0,test17Result);
 		});
 		
 		it('should throw $e when called without arguments.',function() {

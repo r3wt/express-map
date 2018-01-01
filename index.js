@@ -6,6 +6,13 @@ const verbs = [
 ]; 
 //the http methods supported by express + all for all.
 
+
+//flatten array functiont aken from gist.github
+const flatten = arr => {
+    for (let i=0; i < arr.length;Array.isArray(arr[i]) && arr.splice(i, 1, ...arr[i])  || i++){}
+    return arr
+}
+
 //use var so it can be cleaned up when the app starts.
 var controllers = {};//cache controllers.
 
@@ -46,7 +53,6 @@ const Map = function Map(...args){
             var prefix = '';
         }
         else if(typeof args[0] === 'string'){
-            // @ todo - detect and handle string middleware. else assume its a prefix.
             var middleware = [];
             var prefix = args[0];
         }
@@ -58,10 +64,21 @@ const Map = function Map(...args){
         var middleware = [];
         var routes = args[0];
     }
+    
+    //normalize middleware and parse
+    flatten(middleware);
+    middleware.map(handlers=>{
+        if(typeof handlers == 'string') {
+            handlers = handlers.split(',');
+            handlers = handlers.map((v) => { return v.trim().trimLeft() });    
+        }
+        return handlers;
+    });
+    middleware = flatten(middleware);
 
-    // console.log(prefix);
-    // console.log(middleware);
-    // console.log(routes);
+    console.log(prefix);
+    console.log(middleware);
+    console.log(routes);
 
     if(typeof prefix !== 'string'){
         throw new Error('`express-map` invalid argument exception. option `prefix` must be a string.');
@@ -125,7 +142,8 @@ const Map = function Map(...args){
             
             var strHandlers = [];//for the logger output
             if(middleware.length){
-                handlers.splice(1,0,...middleware);//insert the middleware into the list of handlers.
+                handlers = middleware.concat(...handlers);
+                //handlers.splice(1,0,...middleware);//insert the middleware into the list of handlers.
             }
             handlers = handlers.map((v)=>{
 
@@ -165,6 +183,11 @@ const Map = function Map(...args){
                 return h;//h should now point directly to each handler function, regardless of depth.
                 
             });
+
+            console.log(verb);
+            console.log(routePath);
+            console.log(strHandlers);
+            console.log(handlers);
             
             this[verb](routePath,...handlers);//call the associated express method with handlers as arguments
             
