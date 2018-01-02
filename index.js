@@ -179,10 +179,10 @@ const Map = function Map(...args){
                 
             });
 
-            console.log(verb);
-            console.log(routePath);
-            console.log(strHandlers);
-            console.log(handlers);
+            // console.log(verb);
+            // console.log(routePath);
+            // console.log(strHandlers);
+            // console.log(handlers);
             
             this[verb](routePath,...handlers);//call the associated express method with handlers as arguments
             
